@@ -1,0 +1,20 @@
+# Casos de uso
+
+## Mostrar el texto de un artículo para una fecha dada
+
+Como usuario, quiero poder consultar el artículo para una fecha seleccionada
+
+GIVEN tengo la app iniciada
+WHEN de momento, en la vista global
+THEN veo el texto del artículo y las preguntas asociadas
+
+-Entities
+    Article
+        Id
+        Title
+        Text
+        Question1
+        Question2
+        Question3
+- Use Cases
+    Get Article by Date
