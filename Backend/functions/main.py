@@ -12,10 +12,10 @@ import tempfile
 import uuid
 import json
 
-# Inicializamos Firebase
+# Starting Firebase
 initialize_app()
 
-# Definimos el secreto
+# Secret
 OPENAI_API_KEY = SecretParam("OPENAI_API_KEY")
 
 @https_fn.on_request()
@@ -105,7 +105,7 @@ def document_to_audio(event: firestore_fn.Event[firestore_fn.DocumentSnapshot | 
     if event.data is None:
         return
 
-    # Campos a procesar
+    # Fields to process
     text_fields = ["article", "title", "question1", "question2", "question3"]
     audio_urls = {}
     api_key = OPENAI_API_KEY.value
@@ -116,13 +116,13 @@ def document_to_audio(event: firestore_fn.Event[firestore_fn.DocumentSnapshot | 
         for field in text_fields:
             text_value = event.data.get(field)
             if not text_value:
-                continue  # Campo vacío o inexistente
+                continue 
 
-            # Crear archivo temporal
+            # Temporal file
             with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as temp_file:
                 audio_path = temp_file.name
 
-            # Generar audio con OpenAI
+            # Generarating audio with OpenAI
             with client.audio.speech.with_streaming_response.create(
                 model="tts-1",
                 voice="alloy",
@@ -130,21 +130,21 @@ def document_to_audio(event: firestore_fn.Event[firestore_fn.DocumentSnapshot | 
             ) as response:
                 response.stream_to_file(audio_path)
 
-            # Subir a Firebase Storage
+            # Uploading to Firebase Storage
             file_id = str(uuid.uuid4())
             blob = bucket.blob(f"audio_articles/{file_id}.mp3")
             blob.upload_from_filename(audio_path)
             blob.make_public()
             audio_url = blob.public_url
 
-            # Asociar la URL al campo correspondiente
+            # Associating the URL with the corresponding field
             audio_urls[f"{field}_audio_url"] = audio_url
             print(f"Audio generated in {field}: {audio_url}")
 
-            # Eliminar el archivo temporal
+            # Deleting temporal File
             os.remove(audio_path)
 
-        # Guardar todas las URLs en el documento
+        # Saving the URLs to the document
         if audio_urls:
             event.data.reference.update(audio_urls)
             print(f" URLs added to {event.params['docId']}: {audio_urls}")
@@ -165,17 +165,17 @@ def upload_audio_response(req: https_fn.Request) -> https_fn.Response:
     if not all([user_id, session_id, question_index, file]):
         return https_fn.Response("Missing parameters", status=400)
 
-    # Guardar el archivo en temp
+    # Saving temp
     tmp = tempfile.NamedTemporaryFile(delete=False)
     file.save(tmp.name)
 
-    # Ruta en Storage
+    # Path in Storage
     storage_path = f"audiosDailyLinguaUsers/{user_id}/{session_id}/q{question_index}.wav"
     bucket = storage.bucket()
     blob = bucket.blob(storage_path)
     blob.upload_from_filename(tmp.name, content_type=file.content_type)
 
-    # Actualizar Firestore
+    # Updating Firestore
     db = firestore.client()
     sessions_ref = db.collection("dailyLinguaUsers").document(user_id) \
         .collection("sessions").document(session_id)
@@ -184,16 +184,16 @@ def upload_audio_response(req: https_fn.Request) -> https_fn.Response:
         f"responseAudio{int(question_index)}Path": storage_path
     }
 
-    # Si es la primera pregunta → guardar articleId
+    # If first question → saving articleId
     if question_index == "1" and article_id:
         session_updates["articleId"] = article_id
 
-    # Si es la tercera pregunta → marcar como completado y guardar fecha
+    # If third
     if question_index == "3":
         session_updates["completed"] = True
         session_updates["createdAt"] = firestore.SERVER_TIMESTAMP
 
-    # Subimos todo junto
+    # Saving
     sessions_ref.set(session_updates, merge=True)
 
     return https_fn.Response("Audio uploaded successfully", status=200)
@@ -255,7 +255,7 @@ def on_session_completed(event: firestore_fn.Event[firestore_fn.Change]) -> None
 
             os.remove(tmp_path)
 
-        # 4. Creating prompt and generating report
+        # Creating prompt and generating report
         instructions = "You are a language teacher who has to analyze the quality of a student's oral responses based on a previously read article and three questions. I'll now pass everything on to you. This student is trying to learn and improve their oral expressions, as well as overcome their fear of speaking English."
         input_text = f"Artículo: {article_text}\n\n"
         for i in range(3):
@@ -271,7 +271,7 @@ def on_session_completed(event: firestore_fn.Event[firestore_fn.Change]) -> None
 
         report = response.output_text.strip()
 
-        # 5. Save report in Firestore
+        # Save report in Firestore
         session_ref = db.collection("dailyLinguaUsers").document(user_id).collection("sessions").document(session_id)
         session_ref.update({"report": report})
 
