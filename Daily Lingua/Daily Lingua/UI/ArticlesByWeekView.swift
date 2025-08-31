@@ -30,7 +30,7 @@ struct ArticlesByWeekView: View {
             if viewModel.showSpinner {
                 ProgressView().progressViewStyle(.circular)
             } else {
-                Text("Número de artículos: \(viewModel.articles.count)")
+                Text("Count of articles: \(viewModel.articles.count)")
                     .font(.subheadline)
                     .foregroundColor(.gray)
                 List(viewModel.articles, id: \.id) { article in

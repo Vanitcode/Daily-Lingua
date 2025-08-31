@@ -27,7 +27,7 @@ class ArticleLocalAudiosPlayerViewModel {
         self.getArticleLocalAudiosByIdType = getArticleLocalAudiosByIdType
         self.audioPlayerManager = audioPlayerManager
         self.articleId = articleId
-        print("STARTING ViewModel - ID: \(uuid) para el artículo: \(articleId)")
+        print("STARTING ViewModel - ID: \(uuid) for article: \(articleId)")
     }
     
     func onAppear() {

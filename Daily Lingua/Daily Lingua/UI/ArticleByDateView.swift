@@ -19,7 +19,7 @@ struct ArticleByDateView: View {
         VStack {
             Text("Your article for the date 2025-06-06 is:")
             
-            Button("Cargar artículos") {
+            Button("Load articles") {
                 Task {
                     try await viewModel.fetchArticlesByDate(date: "2025-06-06")
                 }
@@ -27,7 +27,7 @@ struct ArticleByDateView: View {
             if viewModel.showSpinner {
                 ProgressView().progressViewStyle(.circular )
             } else {
-                Text(viewModel.article?.text ?? "No hay artículo")
+                Text(viewModel.article?.text ?? "No articles found")
             }
             
                 

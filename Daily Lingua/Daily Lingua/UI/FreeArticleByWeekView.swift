@@ -22,7 +22,7 @@ struct FreeArticleByWeekView: View {
             if viewModel.showSpinner {
                 ProgressView().progressViewStyle(.circular )
             } else {
-                Text(viewModel.article?.text ?? "No hay artículo")
+                Text(viewModel.article?.text ?? "No article found")
             }
         }.onAppear() {
             viewModel.onAppear()
