@@ -22,6 +22,9 @@ The project is divided into several layers:
 - **UI**  
   SwiftUI Views that display content to the user and interact with ViewModels.
 
+Diagram:
+![Diagram](resources/media/architecture_diagram.png)
+
 
 ## Backend
 The backend is built with **Python** using **Firebase** and handles several key responsibilities:
