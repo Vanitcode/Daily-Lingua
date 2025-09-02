@@ -9,6 +9,6 @@ import Foundation
 
 protocol AVRecordManagerType {
     func startRecording() async -> Result<Void, AVRecordManagerError>
-    func stopRecording() async -> Result<String, AVRecordManagerError>
+    func stopRecording() async -> Result<URL, AVRecordManagerError>
     func cancelRecording() async -> Result<Void, AVRecordManagerError>
 }

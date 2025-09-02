@@ -14,7 +14,7 @@ I already have some use cases and the cache. The next step is to think about wha
 - I have the interface:
     - I have the Infrastructure
     - Let's work on the Repository/Data Source
-
+        -- (Done) Define Mapper and Errors
 --
 
 ## Improvements

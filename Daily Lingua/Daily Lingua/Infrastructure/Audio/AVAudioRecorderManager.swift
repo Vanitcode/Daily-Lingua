@@ -47,14 +47,14 @@ actor AVAudioRecorderManager: AVRecordManagerType {
         }
     }
 
-    func stopRecording() async -> Result<String, AVRecordManagerError> {
+    func stopRecording() async -> Result<URL, AVRecordManagerError> {
         guard let recorder = recorder, let url = recordingURL else {
             return .failure(.stopRecordingError)
         }
 
         recorder.stop()
         self.recorder = nil
-        return .success(url.path)
+        return .success(url)
     }
 
     func cancelRecording() async -> Result<Void, AVRecordManagerError> {
