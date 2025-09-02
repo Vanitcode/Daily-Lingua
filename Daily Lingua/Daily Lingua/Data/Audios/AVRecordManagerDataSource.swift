@@ -16,7 +16,6 @@ class AVRecordManagerDataSource: AVRecordManagerDataSourceType {
     }
     
     func startRecording() async -> Result<Void, AVRecordManagerError> {
-        
         return await recordManager.startRecording()
     }
     
