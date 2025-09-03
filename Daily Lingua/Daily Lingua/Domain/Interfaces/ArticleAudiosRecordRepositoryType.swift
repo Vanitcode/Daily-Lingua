@@ -14,5 +14,5 @@ protocol ArticleAudiosRecordRepositoryType {
     
     func cancelRecording() async -> Result<Void, ArticleAudiosRecordDomainError>
     
-    func getAudiosRecord(for articleId: String) async -> Result<ArticleAudiosRecord, ArticleAudiosRecordDomainError>
+    func getAudiosRecord(for articleId: String) -> Result<ArticleAudiosRecord, ArticleAudiosRecordDomainError>
 }

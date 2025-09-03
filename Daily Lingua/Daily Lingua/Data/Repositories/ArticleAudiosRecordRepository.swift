@@ -64,7 +64,7 @@ class ArticleAudiosRecordRepository: ArticleAudiosRecordRepositoryType {
         return .success(())
     }
     
-    func getAudiosRecord(for articleId: String) async -> Result<ArticleAudiosRecord, ArticleAudiosRecordDomainError> {
+    func getAudiosRecord(for articleId: String) -> Result<ArticleAudiosRecord, ArticleAudiosRecordDomainError> {
         guard let audioRecordResult = records[articleId] else {
             return .failure(.gettingEntityFailed)
         }

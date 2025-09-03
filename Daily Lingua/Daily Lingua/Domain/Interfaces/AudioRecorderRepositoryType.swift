@@ -9,6 +9,10 @@ import Foundation
 
 protocol AudioRecorderRepositoryType {
     func startRecording() async -> Result <Void, AudioRecorderError>
+    
     func stopRecording() async -> Result <String, AudioRecorderError>
+    
     func cancelRecording() async -> Result <Void, AudioRecorderError>
+    
+    func getAudiosRecord(for articleId: String) -> Result<ArticleAudiosRecord, ArticleAudiosRecordDomainError>
 }
