@@ -24,7 +24,7 @@ class ArticleAudiosRecordRepository: ArticleAudiosRecordRepositoryType {
     func startRecordingAnswer(for articleId: String, answerNumber: Int) async -> Result<Void, ArticleAudiosRecordDomainError> {
         
         let startRecordingResult = await recordManagerDataSource.startRecording()
-        guard case .success(let voidResult) = startRecordingResult else {
+        guard case .success() = startRecordingResult else {
             guard case .failure(let error) = startRecordingResult else {
                 return .failure(.generic)
             }

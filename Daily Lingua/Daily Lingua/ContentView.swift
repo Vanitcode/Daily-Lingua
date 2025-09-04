@@ -11,6 +11,7 @@ struct ContentView: View {
     let reportsView: ReportsView
     let userView: UserView
     let mainPageArticlesView: MainPageArticlesView
+    let recordingSessionView: RecordingSessionView
     
     var body: some View {
         TabView {
@@ -22,6 +23,9 @@ struct ContentView: View {
             }
             Tab ("User", systemImage: "person") {
                 userView
+            }
+            Tab ("Testing features", systemImage: "wrench.and.screwdriver" ) {
+                recordingSessionView
             }
         }
     }

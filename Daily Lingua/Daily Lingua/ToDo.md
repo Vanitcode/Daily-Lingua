@@ -17,6 +17,9 @@ I already have some use cases and the cache. The next step is to think about wha
     - (Done) I'll work with DTO with just 1 field with value. I'll create use cases for: record, cancel and so on. Also I'll create a case to "unify" all paths in just 1 Entity.
 - (Done) I can already work with uses Cases
 
+- I can build a small example of recording audio for a specific articleId: HBwVVgl6kn3elVjfI8jr.
+    - (Done) Build ViewModel ()
+    - (Done) Build View
 
 
 -- I will have to implement cache in ArticleAudiosRecordRepository. I'm using a temporal dictionary (Vorübergehend) 

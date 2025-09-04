@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ArticlesByWeekView: View {
-    let viewModel: ArticlesByWeekViewModel
+    private var viewModel: ArticlesByWeekViewModel
     private let createPracticeSheetView: CreatePracticeSheetView
 
     init(viewModel: ArticlesByWeekViewModel, createPracticeSheetView: CreatePracticeSheetView) {
