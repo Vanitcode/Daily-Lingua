@@ -11,7 +11,7 @@ I already have some use cases and the cache. The next step is to think about wha
 
 ## Dealing with audio recording
 
-
+- Bug with Persistence
 
 ## Improvements
 To know if the audio has finished playing: func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {

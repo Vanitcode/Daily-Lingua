@@ -23,7 +23,6 @@ class ArticleByDateViewModel {
         let result = await getArticleByDate.execute(date: date)
         switch result {
         case .success(let article):
-            print("Article received: \(article)")
             self.article = article
         case .failure(let error):
             print("Domain Article Error: \(error)")

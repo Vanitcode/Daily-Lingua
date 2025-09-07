@@ -17,7 +17,6 @@ class SwiftDataCacheArticleAudiosDataSource: CacheAudiosDataSourceType {
     
     @MainActor
     func getRecords(for articleId: String) async -> ArticleAudiosRecord? {
-        let articleAudioRecords = await container.fetchArticleAudios(for: articleId)
         guard let articleRecords = await container.fetchArticleAudios(for: articleId) else {
             return nil
         }
@@ -30,16 +29,16 @@ class SwiftDataCacheArticleAudiosDataSource: CacheAudiosDataSourceType {
     }
     private func stringToFileURL(_ path: String?) -> URL? {
         guard let path = path else { return nil }
-        return URL(fileURLWithPath: path)
+        return URL(filePath: path)
     }
     
     @MainActor
     func saveRecords(_ record: ArticleAudiosRecord, for articleId: String) async {
         let  articleAudioAnswersData =  ArticleAudioAnswersData(
             articleId: articleId,
-            answer1: record.answer1_path?.absoluteString,
-            answer2: record.answer2_path?.absoluteString,
-            answer3: record.answer3_path?.absoluteString,
+            answer1: record.answer1_path?.path(percentEncoded: false),
+            answer2: record.answer2_path?.path(percentEncoded: false),
+            answer3: record.answer3_path?.path(percentEncoded: false),
         )
         await container.deleteAudioAnswers(for: articleId)
         await container.insert(articleAudioAnswersData, articleId: articleId)

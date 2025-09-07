@@ -16,7 +16,7 @@ class SwiftDataContainer {
     private let context: ModelContext
     
     private init() {
-        let schema = Schema([ArticleData.self, ArticleFetchInfo.self])
+        let schema = Schema([ArticleData.self, ArticleFetchInfo.self, ArticleAudioAnswersData.self])
         container = try! ModelContainer(for:schema, configurations: [])
         context = ModelContext(container)
     }
@@ -113,19 +113,10 @@ extension SwiftDataContainer: SwiftDataAudiosContainerType {
     
     @MainActor
     func insert(_ articleAudioAnswers: ArticleAudioAnswersData, articleId: String) async {
-        
-        let existingArticleAudioAnswer = await fetchArticleAudios(for: articleId)
-        
-        if existingArticleAudioAnswer != nil {
-            // Updating the fields
-            existingArticleAudioAnswer!.answer1 = articleAudioAnswers.answer1
-            existingArticleAudioAnswer!.answer2 = articleAudioAnswers.answer2
-            existingArticleAudioAnswer!.answer3 = articleAudioAnswers.answer3
-            try? context.save()
-        } else {
-            //Creating the new ArticleAudioAnswer
-            context.insert(articleAudioAnswers)
-                    try? context.save()
+        context.insert(articleAudioAnswers)
+        do {
+            try context.save()
+        } catch {
         }
     }
     

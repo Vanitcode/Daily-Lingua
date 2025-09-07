@@ -21,11 +21,9 @@ class StrategyCacheAudios: CacheAudiosDataSourceType {
         if let temporalArticleRecords = await temporalCache.getRecords(for: articleId) {
             return temporalArticleRecords
         }
-        
         guard let persistentArticleRecords = await persistentCache.getRecords(for: articleId) else {
             return nil
         }
-        
         await temporalCache.saveRecords(persistentArticleRecords, for: articleId)
         
         return persistentArticleRecords
