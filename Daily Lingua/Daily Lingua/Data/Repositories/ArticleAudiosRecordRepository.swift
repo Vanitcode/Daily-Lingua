@@ -11,14 +11,12 @@ class ArticleAudiosRecordRepository: ArticleAudiosRecordRepositoryType {
     
     private let recordManagerDataSource: AVRecordManagerDataSourceType
     private let errorMapper: ArticleRecordsDomainMapperError
-    private let articleRecordsDomainMapper: ArticleRecordsDomainMapper
+    private let cacheAudiosDataSoruce: CacheAudiosDataSourceType
     
-    private var records: [String:ArticleAudiosRecordDTO] = [:]
-    
-    init(recordManagerDataSource: AVRecordManagerDataSourceType, errorMapper: ArticleRecordsDomainMapperError, articleRecordsDomainMapper: ArticleRecordsDomainMapper) {
+    init(recordManagerDataSource: AVRecordManagerDataSourceType, errorMapper: ArticleRecordsDomainMapperError, cacheAudiosDataSource: CacheAudiosDataSourceType) {
         self.recordManagerDataSource = recordManagerDataSource
         self.errorMapper = errorMapper
-        self.articleRecordsDomainMapper = articleRecordsDomainMapper
+        self.cacheAudiosDataSoruce = cacheAudiosDataSource
     }
     
     func startRecordingAnswer(for articleId: String, answerNumber: Int) async -> Result<Void, ArticleAudiosRecordDomainError> {
@@ -42,15 +40,15 @@ class ArticleAudiosRecordRepository: ArticleAudiosRecordRepositoryType {
             }
             return .failure(errorMapper.map(error: error))
         }
-        var record = records[articleId] ?? ArticleAudiosRecordDTO(articleId: articleId, answer1_path: nil, answer2_path: nil, answer3_path: nil)
+        var record = await cacheAudiosDataSoruce.getRecords(for: articleId) ?? ArticleAudiosRecord(articleId: articleId, answer1_path: nil, answer2_path: nil, answer3_path: nil)
         switch answerNumber {
-            case 1: record = ArticleAudiosRecordDTO(articleId: articleId, answer1_path: url, answer2_path: record.answer2_path, answer3_path: record.answer3_path)
-            case 2: record = ArticleAudiosRecordDTO(articleId: articleId, answer1_path: record.answer1_path, answer2_path: url, answer3_path: record.answer3_path)
-            case 3: record = ArticleAudiosRecordDTO(articleId: articleId, answer1_path: record.answer1_path, answer2_path: record.answer2_path, answer3_path: url)
+            case 1: record = ArticleAudiosRecord(articleId: articleId, answer1_path: url, answer2_path: record.answer2_path, answer3_path: record.answer3_path)
+            case 2: record = ArticleAudiosRecord(articleId: articleId, answer1_path: record.answer1_path, answer2_path: url, answer3_path: record.answer3_path)
+            case 3: record = ArticleAudiosRecord(articleId: articleId, answer1_path: record.answer1_path, answer2_path: record.answer2_path, answer3_path: url)
             default: break
         }
-        records[articleId] = record
-        return .success(articleRecordsDomainMapper.map(dto: record))
+        await cacheAudiosDataSoruce.saveRecords(record, for: articleId)
+        return .success(record)
     }
     
     func cancelRecording() async -> Result<Void, ArticleAudiosRecordDomainError> {
@@ -64,10 +62,10 @@ class ArticleAudiosRecordRepository: ArticleAudiosRecordRepositoryType {
         return .success(())
     }
     
-    func getAudiosRecord(for articleId: String) -> Result<ArticleAudiosRecord, ArticleAudiosRecordDomainError> {
-        guard let audioRecordResult = records[articleId] else {
+    func getAudiosRecord(for articleId: String) async -> Result<ArticleAudiosRecord, ArticleAudiosRecordDomainError> {
+        guard let audioRecordResult = await cacheAudiosDataSoruce.getRecords(for: articleId) else {
             return .failure(.gettingEntityFailed)
         }
-            return .success(articleRecordsDomainMapper.map(dto: audioRecordResult))
+            return .success(audioRecordResult)
     }
 }

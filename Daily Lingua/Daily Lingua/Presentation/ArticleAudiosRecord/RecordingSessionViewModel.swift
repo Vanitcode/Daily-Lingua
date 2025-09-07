@@ -28,6 +28,19 @@ class RecordingSessionViewModel {
         self.fetchAudiosRecord = fetchAudiosRecord
     }
     
+    func onAppear() {
+        Task {
+            let result = await fetchAudiosRecord.execute(for: currentArticleId)
+            guard case .success(let articleAudios) = result else {
+                print("Domain ArticleLocalAudios Error: \(result)")
+                return
+            }
+            Task { @MainActor in
+                self.articleAudiosRecord = articleAudios
+            }
+        }
+    }
+    
     @MainActor
     func startRecording(answerNumber: Int) async {
         errorMessage = nil
@@ -61,10 +74,10 @@ class RecordingSessionViewModel {
     }
     
     @MainActor
-    func fetchAudios() {
+    func fetchAudios() async {
         
         errorMessage = nil
-        let result =  fetchAudiosRecord.execute(for: currentArticleId)
+        let result = await fetchAudiosRecord.execute(for: currentArticleId)
         
         if case .success(let existingArticle) = result {
             articleAudiosRecord = existingArticle

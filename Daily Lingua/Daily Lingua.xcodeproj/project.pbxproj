@@ -19,22 +19,9 @@
 		8F4D7E182DE739F500758061 /* Daily Lingua.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Daily Lingua.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		8F36D1FE2E6A1D04008B9CFD /* Exceptions for "Daily Lingua" folder in "Daily Lingua" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				"Daily-Lingua-Info.plist",
-			);
-			target = 8F4D7E172DE739F500758061 /* Daily Lingua */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		8F4D7E1A2DE739F500758061 /* Daily Lingua */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				8F36D1FE2E6A1D04008B9CFD /* Exceptions for "Daily Lingua" folder in "Daily Lingua" target */,
-			);
 			path = "Daily Lingua";
 			sourceTree = "<group>";
 		};

@@ -8,7 +8,7 @@
 import Foundation
 
 protocol FetchAudiosRecordType {
-    func execute(for articleId: String) -> Result<ArticleAudiosRecord, ArticleAudiosRecordDomainError>
+    func execute(for articleId: String) async -> Result<ArticleAudiosRecord, ArticleAudiosRecordDomainError>
 }
 
 class FetchAudiosRecord: FetchAudiosRecordType {
@@ -19,8 +19,8 @@ class FetchAudiosRecord: FetchAudiosRecordType {
         self.repository = repository
     }
     
-    func execute(for articleId: String) -> Result<ArticleAudiosRecord, ArticleAudiosRecordDomainError> {
-        let result = repository.getAudiosRecord(for: articleId)
+    func execute(for articleId: String) async -> Result<ArticleAudiosRecord, ArticleAudiosRecordDomainError> {
+        let result = await repository.getAudiosRecord(for: articleId)
         return parseResult(result)
     }
     

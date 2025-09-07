@@ -66,7 +66,6 @@ struct PracticeSheetView: View {
         }
         
         .onAppear() {
-            print("Working with the ViewModel: \(viewModel.uuid)")
             viewModel.onAppear()
         }
         .navigationTitle("Training")

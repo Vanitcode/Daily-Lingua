@@ -20,7 +20,6 @@ actor InMemoryCacheArticleDataSource: CacheDataSourceType {
     }
     
     func saveArticleList(_ articles: [Article], week: String) async {
-        self.cache.removeAll()
         self.cache[week] = articles
     }
 }

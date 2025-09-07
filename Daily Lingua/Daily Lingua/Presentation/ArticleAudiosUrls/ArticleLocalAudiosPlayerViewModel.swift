@@ -17,22 +17,14 @@ class ArticleLocalAudiosPlayerViewModel {
     var showSpinner: Bool = false
     var isPlaying: Bool = false
     
-    let uuid = UUID() // Unique indentifier for this ViewModel
-    
-    deinit {
-        print("DELETING ViewModel - ID: \(uuid)")
-    }
-    
     init(getArticleLocalAudiosByIdType: GetArticleLocalAudiosByIdType, audioPlayerManager: AudioPlayerManagerType, articleId: String) {
         self.getArticleLocalAudiosByIdType = getArticleLocalAudiosByIdType
         self.audioPlayerManager = audioPlayerManager
         self.articleId = articleId
-        print("STARTING ViewModel - ID: \(uuid) for article: \(articleId)")
     }
     
     func onAppear() {
         showSpinner = true
-        print("WORKING for the ViewModel: \(uuid)")
         Task {
             let result = await getArticleLocalAudiosByIdType.execute(articleId: articleId)
             guard case .success(let article) = result else {
@@ -48,7 +40,6 @@ class ArticleLocalAudiosPlayerViewModel {
     
     
     func playAudio(url: URL){
-        print("WORKING for the ViewModel: \(uuid)")
         isPlaying = true
         defer { isPlaying = false }
         let result = audioPlayerManager.play(url)

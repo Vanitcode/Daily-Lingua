@@ -26,7 +26,7 @@ actor AVAudioRecorderManager: AVRecordManagerType {
             try session.setActive(true)
 
             let fileName = UUID().uuidString + ".wav"
-            let url = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
+            let url = recordingsDirectory().appendingPathComponent(fileName)
             let settings: [String: Any] = [
                 AVFormatIDKey: Int(kAudioFormatLinearPCM),
                 AVSampleRateKey: 44100,
@@ -58,7 +58,7 @@ actor AVAudioRecorderManager: AVRecordManagerType {
     }
 
     func cancelRecording() async -> Result<Void, AVRecordManagerError> {
-        guard let recorder = recorder, let url = recordingURL else {
+        guard let recorder = recorder else {
             return .failure(.cancelRecordingError)
         }
 
@@ -75,5 +75,12 @@ actor AVAudioRecorderManager: AVRecordManagerType {
                 continuation.resume(returning: granted)
             }
         }
+    }
+    
+    private func recordingsDirectory() -> URL {
+        let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let dir = docs.appendingPathComponent("Recordings")
+        try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        return dir
     }
 }

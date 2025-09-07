@@ -28,7 +28,7 @@ class StartRecordingAnswer: StartRecordingAnswerType {
     
     private func parseResult(_ result: Result<Void, ArticleAudiosRecordDomainError>) -> Result<Void, ArticleAudiosRecordDomainError> {
         
-        guard let startinResult = try? result.get() else {
+        guard let startingResult = try? result.get() else {
             guard case .failure(let error) = result else {
                 return .failure(.generic)
             }

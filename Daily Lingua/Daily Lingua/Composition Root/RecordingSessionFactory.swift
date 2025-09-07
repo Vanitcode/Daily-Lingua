@@ -14,9 +14,17 @@ class RecordingSessionFactory {
     private static func createRepository() -> ArticleAudiosRecordRepositoryType {
         return ArticleAudiosRecordRepository(
             recordManagerDataSource: createAVRecordManagerDataSource(),
-            errorMapper: ArticleRecordsDomainMapperError(),
-            articleRecordsDomainMapper: ArticleRecordsDomainMapper()
+            errorMapper: ArticleRecordsDomainMapperError(), cacheAudiosDataSource: createCacheAudioDataSoruce(),
+            
         )
+    }
+    
+    private static func createCacheAudioDataSoruce() -> CacheAudiosDataSourceType {
+        return StrategyCacheAudios(temporalCache: InMemoryCacheAudiosDataSource.shared, persistentCache: createPersistanceCacheAudiosDataSource())
+    }
+    
+    private static func createPersistanceCacheAudiosDataSource() -> CacheAudiosDataSourceType {
+        return SwiftDataCacheArticleAudiosDataSource(container: SwiftDataContainer.shared)
     }
     
     private static func createAVRecordManagerDataSource() -> AVRecordManagerDataSourceType {

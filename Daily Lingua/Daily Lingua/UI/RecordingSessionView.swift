@@ -70,6 +70,9 @@ struct RecordingSessionView: View {
             }
             .buttonStyle(.borderedProminent)
         }
-        .padding()
+        .onAppear() {
+            viewModel.onAppear()
+        }
+        .navigationTitle("Recording Session")
     }
 }

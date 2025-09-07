@@ -98,4 +98,44 @@ extension SwiftDataContainer: SwiftDataMetadataContainerType {
     }
 }
 
-
+extension SwiftDataContainer: SwiftDataAudiosContainerType {
+    
+    @MainActor
+    func fetchArticleAudios(for articleId: String) async -> ArticleAudioAnswersData? {
+        let predicate = #Predicate<ArticleAudioAnswersData> { $0.articleId == articleId }
+        let descriptor = FetchDescriptor<ArticleAudioAnswersData>(predicate: predicate)
+        
+        guard let articleAudios = try? context.fetch(descriptor).first else {
+            return nil
+        }
+        return articleAudios
+    }
+    
+    @MainActor
+    func insert(_ articleAudioAnswers: ArticleAudioAnswersData, articleId: String) async {
+        
+        let existingArticleAudioAnswer = await fetchArticleAudios(for: articleId)
+        
+        if existingArticleAudioAnswer != nil {
+            // Updating the fields
+            existingArticleAudioAnswer!.answer1 = articleAudioAnswers.answer1
+            existingArticleAudioAnswer!.answer2 = articleAudioAnswers.answer2
+            existingArticleAudioAnswer!.answer3 = articleAudioAnswers.answer3
+            try? context.save()
+        } else {
+            //Creating the new ArticleAudioAnswer
+            context.insert(articleAudioAnswers)
+                    try? context.save()
+        }
+    }
+    
+    func deleteAudioAnswers(for articleId: String) async {
+        guard let existingArticleAudioAnswer = await fetchArticleAudios(for: articleId) else {
+            return
+        }
+        context.delete(existingArticleAudioAnswer)
+        try? context.save()
+    }
+    
+    
+}

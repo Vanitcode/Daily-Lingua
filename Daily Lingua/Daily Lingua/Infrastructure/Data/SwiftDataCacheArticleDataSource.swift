@@ -26,6 +26,7 @@ class SwiftDataCacheArticleDataSource: CacheDataSourceType {
         
     }
     
+    @MainActor
     func saveArticleList(_ articles: [Article], week: String) async {
         let articlesData = articles.map { ArticleData(id: $0.id, title: $0.title, text: $0.text, question1: $0.question1, question2: $0.question2, question3: $0.question3, week: week)}
         await container.deleteArticlesForWeek(for: week)
