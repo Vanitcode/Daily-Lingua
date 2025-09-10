@@ -1,0 +1,82 @@
+//
+//  ChatMessageView.swift
+//  Daily Lingua
+//
+//  Created by Jose Carlos Valenzuela Nieto on 8/9/25.
+//
+
+import SwiftUI
+
+struct ChatMessageView<Content: View>: View {
+    var isSystemmessage: Bool
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        HStack {
+            if isSystemmessage {
+                bubble
+                Spacer(minLength: 60)
+            } else {
+                Spacer(minLength: 60)
+                bubble
+            }
+        }
+        .padding(.horizontal)
+    }
+
+    private var bubble: some View {
+        let colors = bubbleColors(isSystemMessage: isSystemmessage)
+
+        return VStack(alignment: isSystemmessage ? .leading : .trailing) {
+            Image(systemName: isSystemmessage ? "brain" : "person")
+                .resizable()
+                .frame(width: 32, height: 32)
+
+            VStack(alignment: isSystemmessage ? .leading : .trailing) {
+                content
+            }
+            .frame(maxWidth: .infinity, alignment: isSystemmessage ? .leading : .trailing)
+            .padding()
+            .background(colors.background)
+            .foregroundStyle(colors.foreground)
+            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .overlay(alignment: isSystemmessage ? .bottomLeading : .bottomTrailing) {
+                Image(systemName: "arrowtriangle.down.fill")
+                    .font(.title)
+                    .rotationEffect(.degrees(isSystemmessage ? 45 : -45))
+                    .offset(x: isSystemmessage ? -10 : 10, y: 10)
+                    .foregroundStyle(colors.background)
+            }
+        }
+    }
+
+    private func bubbleColors(isSystemMessage: Bool) -> (background: Color, foreground: Color) {
+        if isSystemMessage {
+            return (
+                background: Color(red: 242/255, green: 244/255, blue: 247/255),
+                foreground: .black
+            )
+        } else {
+            return (
+                background: Color(red: 87/255, green: 109/255, blue: 244/255),
+                foreground: .white
+            )
+        }
+    }
+}
+
+
+#Preview {
+    ChatMessageView(isSystemmessage: true) {
+        Text("Hola")
+        Image(systemName: "star.fill")
+            .foregroundStyle(.yellow)
+        Text("Puedes meter imágenes, botones, lo que quieras.")
+    }
+    ChatMessageView(isSystemmessage: false) {
+        Text("Hola")
+        Image(systemName: "star.fill")
+            .foregroundStyle(.yellow)
+        Text("Puedes meter imágenes, botones, lo que quieras.")
+    }
+}
