@@ -8,7 +8,12 @@
 import SwiftUI
 
 struct ChatMessageView<Content: View>: View {
+    
     var isSystemmessage: Bool
+    var onAction1: ((Int) -> Void)? = nil
+    var onAction2: ((Int) -> Void)? = nil
+    var onAction3: ((Int) -> Void)? = nil
+    
     @ViewBuilder let content: Content
 
     var body: some View {
@@ -31,9 +36,39 @@ struct ChatMessageView<Content: View>: View {
             Image(systemName: isSystemmessage ? "brain" : "person")
                 .resizable()
                 .frame(width: 32, height: 32)
+                .padding(.horizontal)
 
             VStack(alignment: isSystemmessage ? .leading : .trailing) {
                 content
+                HStack {
+                    Button(action: {
+                        onAction1?(1)
+                    }) {
+                        Image(systemName: "translate")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 18, height: 18)
+                            .padding(8)
+                    }
+                    Button(action: {
+                        onAction2?(2)
+                    }) {
+                        Image(systemName: "speaker.wave.2")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 18, height: 18)
+                            .padding(8)
+                    }
+                    Button(action: {
+                        onAction3?(3)
+                    }) {
+                        Image(systemName: "repeat")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 18, height: 18)
+                            .padding(8)
+                    }
+                }
             }
             .frame(maxWidth: .infinity, alignment: isSystemmessage ? .leading : .trailing)
             .padding()

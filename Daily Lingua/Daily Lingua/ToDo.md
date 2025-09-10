@@ -6,7 +6,7 @@ I already have some use cases and the cache. The next step is to think about wha
 
 # Working on RecordingSessionView
 
-## Creating the ArticleDescriptionView
+## I must create the Wave View
 
 ## Improvements
 To know if the audio has finished playing: func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
