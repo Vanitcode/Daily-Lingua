@@ -18,6 +18,10 @@ class RecordingSessionViewModel {
     var errorMessage: String? = nil
     var articleAudiosRecord: ArticleAudiosRecord? = nil
     
+    //Fields and values for the FakeWave
+    var audioLevels: [CGFloat] = Array(repeating: 20, count: 30)
+    private var timer: Timer?
+    
     private let startRecordingAnswer: StartRecordingAnswerType
     private let stopRecordingAnswer: StopRecordingAnswerType
     private let fetchAudiosRecord: FetchAudiosRecordType
@@ -49,6 +53,7 @@ class RecordingSessionViewModel {
         let result = await startRecordingAnswer.execute(articleId: currentArticleId, answerNumber: answerNumber)
         switch result {
         case .success:
+            startFakeWaveform()
             isRecording = true
         case .failure(let error):
             isRecording = false
@@ -58,6 +63,7 @@ class RecordingSessionViewModel {
     
     @MainActor
     func stopRecording() async {
+        stopFakeWaveform()
         errorMessage = nil
         guard let answerNumber = currentAnswerNumber else { return }
         
@@ -85,5 +91,20 @@ class RecordingSessionViewModel {
             errorMessage = "Could not fetch the audio recordings"
         }
         
+    }
+    
+    // MARK: - Functions for the FakeWave
+    private func startFakeWaveform() {
+        timer = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { [weak self] _ in
+            guard let self else { return }
+            let randomLevel = CGFloat.random(in: 10...100)
+            self.audioLevels.removeFirst()
+            self.audioLevels.append(randomLevel)
+        }
+    }
+
+    private func stopFakeWaveform() {
+        timer?.invalidate()
+        timer = nil
     }
 }

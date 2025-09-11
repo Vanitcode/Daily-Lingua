@@ -22,6 +22,7 @@ struct RecordingSessionView: View {
             if viewModel.isRecording {
                 Text("Recording in progress (Answer \(viewModel.currentAnswerNumber ?? 0))...")
                     .foregroundColor(.red)
+                FakeWaveformView(audioLevels: viewModel.audioLevels)
             }
 
             // Show all the answers
