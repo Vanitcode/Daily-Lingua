@@ -77,3 +77,7 @@ struct RecordingSessionView: View {
         .navigationTitle("Recording Session")
     }
 }
+
+#Preview {
+    
+}

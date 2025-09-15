@@ -9,15 +9,17 @@ import SwiftUI
 
 struct SessionArticlePresentationView: View {
     var article: Article
-    @State private var isExpanded: Bool = false
+    var imageSystem: String = "mountain.2"
+    var imageColor: String = "green"
     var body: some View {
-        VStack (alignment: .center){
-            Image(systemName: "richtext.page").resizable().frame(width: 64, height: 64)
-            Text(article.title)
-                .font(.title)
-                .fontWeight(.bold)
-                .multilineTextAlignment(.center)
-            }
+        VStack (alignment: .center) {
+            Image(systemName: imageSystem)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 90, height: 90)
+                .foregroundColor(colorMap[imageColor.lowercased()] ?? .primary)
+            Text(article.title).font(.title).fontWeight(.bold).multilineTextAlignment(.center)
+        }
     }
 }
 

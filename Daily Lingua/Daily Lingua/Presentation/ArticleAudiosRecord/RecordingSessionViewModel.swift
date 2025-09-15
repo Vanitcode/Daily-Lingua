@@ -13,7 +13,7 @@ class RecordingSessionViewModel {
         
     var isRecording: Bool = false
     var currentAnswerNumber: Int? = nil
-    var currentArticleId = "HBwVVgl6kn3elVjfI8jr"
+    var article: Article
     
     var errorMessage: String? = nil
     var articleAudiosRecord: ArticleAudiosRecord? = nil
@@ -26,15 +26,16 @@ class RecordingSessionViewModel {
     private let stopRecordingAnswer: StopRecordingAnswerType
     private let fetchAudiosRecord: FetchAudiosRecordType
     
-    init(startRecordingAnswer: StartRecordingAnswerType, stopRecordingAnswer: StopRecordingAnswerType, fetchAudiosRecord: FetchAudiosRecordType) {
+    init(startRecordingAnswer: StartRecordingAnswerType, stopRecordingAnswer: StopRecordingAnswerType, fetchAudiosRecord: FetchAudiosRecordType, article: Article) {
         self.startRecordingAnswer = startRecordingAnswer
         self.stopRecordingAnswer = stopRecordingAnswer
         self.fetchAudiosRecord = fetchAudiosRecord
+        self.article = article
     }
     
     func onAppear() {
         Task {
-            let result = await fetchAudiosRecord.execute(for: currentArticleId)
+            let result = await fetchAudiosRecord.execute(for: article.id)
             guard case .success(let articleAudios) = result else {
                 print("Domain ArticleLocalAudios Error: \(result)")
                 return
@@ -50,7 +51,7 @@ class RecordingSessionViewModel {
         errorMessage = nil
         currentAnswerNumber = answerNumber
         
-        let result = await startRecordingAnswer.execute(articleId: currentArticleId, answerNumber: answerNumber)
+        let result = await startRecordingAnswer.execute(articleId: article.id, answerNumber: answerNumber)
         switch result {
         case .success:
             startFakeWaveform()
@@ -67,7 +68,7 @@ class RecordingSessionViewModel {
         errorMessage = nil
         guard let answerNumber = currentAnswerNumber else { return }
         
-        let result = await stopRecordingAnswer.execute(articleId: currentArticleId, answerNumber: answerNumber)
+        let result = await stopRecordingAnswer.execute(articleId: article.id, answerNumber: answerNumber)
         
         switch result {
         case .success(let updatedArticle):
@@ -83,7 +84,7 @@ class RecordingSessionViewModel {
     func fetchAudios() async {
         
         errorMessage = nil
-        let result = await fetchAudiosRecord.execute(for: currentArticleId)
+        let result = await fetchAudiosRecord.execute(for: article.id)
         
         if case .success(let existingArticle) = result {
             articleAudiosRecord = existingArticle
@@ -108,3 +109,5 @@ class RecordingSessionViewModel {
         timer = nil
     }
 }
+
+

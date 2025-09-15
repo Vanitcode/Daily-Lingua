@@ -8,5 +8,5 @@
 import Foundation
 
 protocol CreatePracticeSheetView {
-    func create(articleId: String) -> PracticeSheetView
+    func create(article: Article) -> PracticeSheetView
 }

@@ -1,12 +1,15 @@
+
 class RecordingSessionFactory {
-    static func create() -> RecordingSessionView {
-        let repository = createRepository() // una sola instancia
+    static func create(article: Article) -> RecordingSessionView {
+        let repository = createRepository()
+        
         
         return RecordingSessionView(
             viewModel: RecordingSessionViewModel(
                 startRecordingAnswer: StartRecordingAnswer(repository: repository),
                 stopRecordingAnswer: StopRecordingAnswer(repository: repository),
-                fetchAudiosRecord: FetchAudiosRecord(repository: repository)
+                fetchAudiosRecord: FetchAudiosRecord(repository: repository),
+                article: article
             )
         )
     }

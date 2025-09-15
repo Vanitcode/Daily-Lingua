@@ -34,12 +34,13 @@ struct ArticlesByWeekView: View {
                     .font(.subheadline)
                     .foregroundColor(.gray)
                 List(viewModel.articles, id: \.id) { article in
-                    NavigationLink(destination: createPracticeSheetView.create(articleId: article.id)) {
+                    NavigationLink(destination: createPracticeSheetView.create(article: article)) {
                         Text(article.title)
                     }
                 }
             }
         }
+        .frame(maxHeight: .infinity, alignment: .top)
         .onAppear {
             viewModel.onAppear()
         }

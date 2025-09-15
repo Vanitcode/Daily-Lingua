@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct MainPageArticlesView: View {
+    
     var articlesByWeekView: ArticlesByWeekView
 
     var body: some View {

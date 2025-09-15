@@ -38,7 +38,6 @@ class ArticleLocalAudiosPlayerViewModel {
         }
     }
     
-    
     func playAudio(url: URL){
         isPlaying = true
         defer { isPlaying = false }

@@ -11,7 +11,7 @@ struct ContentView: View {
     let reportsView: ReportsView
     let userView: UserView
     let mainPageArticlesView: MainPageArticlesView
-    let recordingSessionView: RecordingSessionView
+    //let recordingSessionView: RecordingSessionView
     
     var body: some View {
         TabView {
@@ -25,7 +25,7 @@ struct ContentView: View {
                 userView
             }
             Tab ("Testing features", systemImage: "wrench.and.screwdriver" ) {
-                recordingSessionView
+                Text("On progress")
             }
         }
     }

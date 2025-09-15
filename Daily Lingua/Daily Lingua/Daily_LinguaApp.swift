@@ -27,7 +27,7 @@ struct Daily_LinguaApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     var body: some Scene {
         WindowGroup {
-            ContentView(reportsView: reportsView, userView: userView, mainPageArticlesView: MainPageFactory.create(), recordingSessionView: RecordingSessionFactory.create())
+            ContentView(reportsView: reportsView, userView: userView, mainPageArticlesView: MainPageFactory.create())
         }
     }
 }

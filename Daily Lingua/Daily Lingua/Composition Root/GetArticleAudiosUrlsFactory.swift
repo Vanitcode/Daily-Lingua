@@ -9,8 +9,8 @@ import Foundation
 
 class GetArticleAudiosUrlsFactory: CreatePracticeSheetView {
     
-     func create(articleId: String) -> PracticeSheetView {
-         return PracticeSheetView(viewModel: createViewModel(articleId: articleId))
+    func create(article: Article) -> PracticeSheetView {
+        PracticeSheetView(viewModel: Prac)
     }
     
     private func createViewModel(articleId:String) -> ArticleLocalAudiosPlayerViewModel {
