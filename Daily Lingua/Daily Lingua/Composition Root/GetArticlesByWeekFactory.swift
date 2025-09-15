@@ -9,7 +9,7 @@ import Foundation
 
 class GetArticlesByWeekFactory {
     static func create() -> ArticlesByWeekView {
-        return ArticlesByWeekView(viewModel: createViewModel(), createPracticeSheetView: GetArticleAudiosUrlsFactory())
+        return ArticlesByWeekView(viewModel: createViewModel(), createPracticeSheetView: PracticeSheetFactory())
     }
     
     private static func createViewModel() ->  ArticlesByWeekViewModel {

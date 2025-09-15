@@ -11,7 +11,6 @@ struct ContentView: View {
     let reportsView: ReportsView
     let userView: UserView
     let mainPageArticlesView: MainPageArticlesView
-    //let recordingSessionView: RecordingSessionView
     
     var body: some View {
         TabView {

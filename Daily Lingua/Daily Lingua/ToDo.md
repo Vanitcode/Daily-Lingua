@@ -9,7 +9,8 @@ I already have some use cases and the cache. The next step is to think about wha
 ## (done)I must create the Wave View
 ## I have to unify the fields and functions of RECORDINGSESSIONVIEWMODEL and ARTICLELOCALAUDIOSPLAYERVIEWMODEL
     -- (Done) Think how the flow is
-    -- I can transform how ChatMessageView is show in PracticeSheetView
+    -- Build the new RecordingSession to PracticeSheetFactory
+    -- I can transform how ChatMessageView is showed in PracticeSheetView
     -- Create a bar to control the record manager
 
 #Article must change. I have to add image from Simbols SF
