@@ -53,6 +53,11 @@ actor AVAudioRecorderManager: AVRecordManagerType {
 
         recorder.stop()
         self.recorder = nil
+
+        let session = AVAudioSession.sharedInstance()
+        try? session.setCategory(.playback, mode: .default, options: [.defaultToSpeaker])
+        try? session.setActive(true)
+
         return .success(url)
     }
 
@@ -83,3 +88,4 @@ actor AVAudioRecorderManager: AVRecordManagerType {
         return dir
     }
 }
+

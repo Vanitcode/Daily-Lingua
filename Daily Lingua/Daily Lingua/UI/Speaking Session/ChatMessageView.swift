@@ -14,7 +14,7 @@ struct ChatMessageView<Content: View>: View {
     var onAction2: ((Int) -> Void)? = nil
     var onAction3: ((Int) -> Void)? = nil
     
-    @ViewBuilder let content: Content
+    @ViewBuilder var content: Content
 
     var body: some View {
         HStack {
@@ -103,15 +103,15 @@ struct ChatMessageView<Content: View>: View {
 
 #Preview {
     ChatMessageView(isSystemmessage: true) {
-        Text("Hola")
+        Text("Hi")
         Image(systemName: "star.fill")
             .foregroundStyle(.yellow)
-        Text("Puedes meter imágenes, botones, lo que quieras.")
+        Text("This bubble can take everything")
     }
     ChatMessageView(isSystemmessage: false) {
-        Text("Hola")
+        Text("Hallo")
         Image(systemName: "star.fill")
             .foregroundStyle(.yellow)
-        Text("Puedes meter imágenes, botones, lo que quieras.")
+        Text("Alles geht gut")
     }
 }

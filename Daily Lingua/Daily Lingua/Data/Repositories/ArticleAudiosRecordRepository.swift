@@ -44,9 +44,9 @@ class ArticleAudiosRecordRepository: ArticleAudiosRecordRepositoryType {
             record = ArticleAudiosRecord(articleId: articleId, answer1_path: nil, answer2_path: nil, answer3_path: nil)
         }
         switch answerNumber {
-        case 1: record = ArticleAudiosRecord(articleId: articleId, answer1_path: url, answer2_path: record?.answer2_path, answer3_path: record?.answer3_path)
-        case 2: record = ArticleAudiosRecord(articleId: articleId, answer1_path: record?.answer1_path, answer2_path: url, answer3_path: record?.answer3_path)
-        case 3: record = ArticleAudiosRecord(articleId: articleId, answer1_path: record?.answer1_path, answer2_path: record?.answer2_path, answer3_path: url)
+        case 0: record = ArticleAudiosRecord(articleId: articleId, answer1_path: url, answer2_path: record?.answer2_path, answer3_path: record?.answer3_path)
+        case 1: record = ArticleAudiosRecord(articleId: articleId, answer1_path: record?.answer1_path, answer2_path: url, answer3_path: record?.answer3_path)
+        case 2: record = ArticleAudiosRecord(articleId: articleId, answer1_path: record?.answer1_path, answer2_path: record?.answer2_path, answer3_path: url)
             default: break
         }
         await cacheAudiosDataSource.saveRecords(record!, for: articleId)

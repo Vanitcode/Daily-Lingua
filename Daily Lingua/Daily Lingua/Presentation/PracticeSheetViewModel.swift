@@ -6,19 +6,20 @@
 //
 
 import Foundation
+import CoreGraphics
 
-struct ChatMessage: Identifiable {
-    let id = UUID()
+struct ChatMessage: Identifiable, Equatable {
+    let id: String
     var type: ChatMessageType
 }
 
-enum ChatMessageType {
-    case systemTextLarge(String)
+enum ChatMessageType: Equatable {
+    case systemTextLarge(String, URL)
     case systemTextShort(String, URL)
     case userAudio(url: URL, status: userAudioRecorderStatus, questionIndex: Int)
 }
 
-enum userAudioRecorderStatus {
+enum userAudioRecorderStatus: Equatable {
     case initial
     case recording
     case recorded
@@ -37,11 +38,12 @@ class PracticeSheetViewModel {
     
     var article: Article
     
-    var articlesLocalAudios: [ArticleLocalAudios] = []
+    var articleLocalAudios: ArticleLocalAudios? = nil
     var articleAudiosRecord: ArticleAudiosRecord? = nil
-    var messages: [ChatMessage] = []
-    var currentQuestionIndex: Int = 0
-    
+    @MainActor var messages: [ChatMessage] = []
+    @MainActor var nowPlayingURL: URL? = nil
+    @MainActor var state: State = .initialLoading
+
     //Fields and values for the FakeWave
     var audioLevels: [CGFloat] = Array(repeating: 20, count: 30)
     private var timer: Timer?
@@ -55,45 +57,49 @@ class PracticeSheetViewModel {
         self.article = article
     }
     
+    @MainActor
     func onAppear() {
-        
+        messages = []
+        self.state = .initialLoading
+
         Task {
             async let localAudiosResult = getArticleLocalAudiosById.execute(articleId: article.id)
             async let recordResult = fetchAudiosRecord.execute(for: article.id)
-            
+
             let (res1, res2) = await (localAudiosResult, recordResult)
-            
-            await MainActor.run {
-                if case .success(let articleLocalAudios) = res1 {
-                    self.articlesLocalAudios.append(articleLocalAudios)
-                    self.messages.append(.init(type: .systemTextLarge(article.text)))
-                    self.messages.append(.init(type: .systemTextShort(article.question1, articleLocalAudios.question1_path)))
-                    showNewQuestion(index: 0, audios: articleLocalAudios)
+
+            switch res1 {
+            case .success(let resultArticleLocalAudios):
+                self.articleLocalAudios = resultArticleLocalAudios
+            case .failure:
+                self.state = .error("Remote error")
+                return
+            }
+
+            if case .success(let articleRecordsAudios) = res2 {
+                self.articleAudiosRecord = articleRecordsAudios
+            } else {
+                self.articleAudiosRecord = nil
+            }
+            self.rebuildMessages()
+            if let local = self.articleLocalAudios {
+                if self.nextUnrecordedQuestionIndex() == nil {
+                    self.state = .completed
                 } else {
-                    print("Error en LocalAudios: \(res1)")
-                }
-                if case .success(let articleAudios) = res2 {
-                    self.articleAudiosRecord = articleAudios
-                } else {
-                    print("There are no records for this article.")
+                    self.state = .ready(articleLocalAudios: local)
                 }
             }
         }
     }
     
-    private func showNewQuestion(index: Int, audios: ArticleLocalAudios) {
-        guard index < 3 else { return }
-        let questionText = [article.question1, article.question2, article.question3][index]
-        let questionAudioURL = [audios.question1_path, audios.question2_path, audios.question3_path][index]
-
-        messages.append(.init(type: .systemTextShort(questionText, questionAudioURL)))
-        messages.append(.init(type: .userAudio(url: URL(fileURLWithPath: ""), status: .initial, questionIndex: index)))
-        currentQuestionIndex = index
-    }
-    
     @MainActor
     func startRecording(for questionIndex: Int) async {
-        stopFakeWaveform()
+        if nowPlayingURL != nil {
+            audioPlayerManager.stop()
+            nowPlayingURL = nil
+        }
+        startFakeWaveform()
+        self.state = .recordingAnswer(number: questionIndex)
 
         guard let index = messages.firstIndex(where: {
             if case let .userAudio(_, _, qIndex) = $0.type, qIndex == questionIndex { return true }
@@ -123,40 +129,33 @@ class PracticeSheetViewModel {
     @MainActor
     func stopRecording(for questionIndex: Int) async {
         stopFakeWaveform()
-
-        guard let index = messages.firstIndex(where: {
-            if case let .userAudio(_, _, qIndex) = $0.type, qIndex == questionIndex { return true }
-            return false
-        }) else {
-            return
-        }
+        self.state = .recordingAnswerStopped(number: questionIndex)
 
         let result = await stopRecordingAnswer.execute(articleId: article.id, answerNumber: questionIndex)
 
         switch result {
         case .success(let updatedArticle):
-            articleAudiosRecord = updatedArticle
+            self.articleAudiosRecord = updatedArticle
 
-            if let answerURL = updatedArticle.answerURL(for: questionIndex) {
+            self.rebuildMessages()
+
+            if nextUnrecordedQuestionIndex() == nil {
+                self.state = .completed
+            } else if let local = self.articleLocalAudios {
+                self.state = .ready(articleLocalAudios: local)
+            }
+
+        case .failure:
+            if let index = messages.firstIndex(where: {
+                if case let .userAudio(_, _, qIndex) = $0.type, qIndex == questionIndex { return true }
+                return false
+            }) {
                 messages[index].type = .userAudio(
-                    url: answerURL,
-                    status: .recorded,
-                    questionIndex: questionIndex
-                )
-            } else {
-                messages[index].type = .userAudio(
-                    url: URL(filePath: ""),
+                    url: URL(fileURLWithPath: ""),
                     status: .initial,
                     questionIndex: questionIndex
                 )
             }
-
-        case .failure:
-            messages[index].type = .userAudio(
-                url: URL(filePath: ""),
-                status: .initial,
-                questionIndex: questionIndex
-            )
         }
     }
     
@@ -173,15 +172,71 @@ class PracticeSheetViewModel {
         
     }
     
-    func playAudio(url: URL){
-        let result = audioPlayerManager.play(url)
-        if case .failure(let error) = result {
-            print("Domain AudioPlayerManager Error: \(error)")
+    @MainActor
+    private func rebuildMessages() {
+        guard let local = articleLocalAudios else { return }
+
+        var newMessages: [ChatMessage] = []
+        newMessages.append(ChatMessage(id: "article", type: .systemTextLarge(article.text, local.article_path)))
+
+        let questionTexts = [article.question1, article.question2, article.question3]
+        let questionURLs = [local.question1_path, local.question2_path, local.question3_path]
+
+        var encounteredUnrecorded = false
+
+        for i in 0..<3 {
+            if encounteredUnrecorded { break }
+
+            newMessages.append(ChatMessage(id: "q\(i)-system", type: .systemTextShort(questionTexts[i], questionURLs[i])))
+
+            if let answerURL = articleAudiosRecord?.answerURL(for: i) {
+                newMessages.append(ChatMessage(id: "q\(i)-user", type: .userAudio(url: answerURL, status: .recorded, questionIndex: i)))
+            } else {
+                newMessages.append(ChatMessage(id: "q\(i)-user", type: .userAudio(url: URL(fileURLWithPath: ""), status: .initial, questionIndex: i)))
+                encounteredUnrecorded = true
+            }
+        }
+
+        messages = newMessages
+    }
+
+    @MainActor
+    private func nextUnrecordedQuestionIndex() -> Int? {
+        for i in 0..<3 {
+            if articleAudiosRecord?.answerURL(for: i) == nil {
+                return i
+            }
+        }
+        return nil
+    }
+    @MainActor
+    private func isRecordingState(_ state: State) -> Bool {
+        switch state {
+        case .recordingAnswer(_), .recordingAnswerStopped(_):
+            return true
+        default:
+            return false
         }
     }
     
-    func stopAudio(){
+    @MainActor func playAudio(url: URL){
+        let result = audioPlayerManager.play(url)
+        if case .failure(let error) = result {
+            print("Domain AudioPlayerManager Error: \(error)")
+            return
+        } 
+        nowPlayingURL = url
+        if !isRecordingState(state) {
+            self.state = .playingAudio
+        }
+    }
+    
+    @MainActor func stopAudio(){
         audioPlayerManager.stop()
+        nowPlayingURL = nil
+        if !isRecordingState(state) {
+            self.state = .stopPlayingAudio
+        }
     }
     
     // MARK: - Functions for the FakeWave
@@ -201,11 +256,12 @@ class PracticeSheetViewModel {
     
     enum State {
         case initialLoading
-        case ready([ArticleLocalAudios])
+        case ready(articleLocalAudios: ArticleLocalAudios)
 
-        
-        case playingAudio(number: Int)
+        case playingAudio
+        case stopPlayingAudio
         case recordingAnswer(number: Int)
+        case recordingAnswerStopped(number: Int)
         case answerRecorded(number: Int)
 
         case completed
@@ -213,5 +269,5 @@ class PracticeSheetViewModel {
         case error(String)
     }
 
-    var state: State = .initialLoading
 }
+
