@@ -16,10 +16,10 @@ struct ChatMessage: Identifiable, Equatable {
 enum ChatMessageType: Equatable {
     case systemTextLarge(String, URL)
     case systemTextShort(String, URL)
-    case userAudio(url: URL, status: userAudioRecorderStatus, questionIndex: Int)
+    case userAudio(url: URL, status: UserAudioRecorderStatus, questionIndex: Int)
 }
 
-enum userAudioRecorderStatus: Equatable {
+enum UserAudioRecorderStatus: Equatable {
     case initial
     case recording
     case recorded
@@ -174,7 +174,11 @@ class PracticeSheetViewModel {
     
     @MainActor
     private func rebuildMessages() {
-        guard let local = articleLocalAudios else { return }
+        guard let local = articleLocalAudios else {
+            print("No se pudo obtener el audio local para el artículo")
+            return
+        }
+        print("Creando mensaje de sistema con audioURL:", local.article_path)
 
         var newMessages: [ChatMessage] = []
         newMessages.append(ChatMessage(id: "article", type: .systemTextLarge(article.text, local.article_path)))

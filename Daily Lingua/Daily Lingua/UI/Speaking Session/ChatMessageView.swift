@@ -10,9 +10,10 @@ import SwiftUI
 struct ChatMessageView<Content: View>: View {
     
     var isSystemmessage: Bool
-    var onAction1: ((Int) -> Void)? = nil
-    var onAction2: ((Int) -> Void)? = nil
-    var onAction3: ((Int) -> Void)? = nil
+    var message: ChatMessage
+    var onAction1: (() -> Void)? = nil // To listen
+    var onAction2: (() -> Void)? = nil // For recording actions
+    var onAction3: (() -> Void)? = nil
     
     @ViewBuilder var content: Content
 
@@ -31,10 +32,14 @@ struct ChatMessageView<Content: View>: View {
 
     private var bubble: some View {
         let colors = bubbleColors(isSystemMessage: isSystemmessage)
+        let button1Image = button1Image(message: message)
+        let button2Image = button2Image(message: message)
+        
 
         return VStack(alignment: isSystemmessage ? .leading : .trailing) {
             Image(systemName: isSystemmessage ? "brain" : "person")
                 .resizable()
+                .scaledToFit()
                 .frame(width: 32, height: 32)
                 .padding(.horizontal)
 
@@ -42,32 +47,32 @@ struct ChatMessageView<Content: View>: View {
                 content
                 HStack {
                     Button(action: {
-                        onAction1?(1)
+                        onAction1?()
                     }) {
-                        Image(systemName: "translate")
+                        Image(systemName: button1Image)
                             .resizable()
                             .scaledToFit()
                             .frame(width: 18, height: 18)
                             .padding(8)
                     }
                     Button(action: {
-                        onAction2?(2)
+                        onAction2?()
                     }) {
-                        Image(systemName: "speaker.wave.2")
+                        Image(systemName: button2Image)
                             .resizable()
                             .scaledToFit()
                             .frame(width: 18, height: 18)
                             .padding(8)
                     }
-                    Button(action: {
-                        onAction3?(3)
-                    }) {
-                        Image(systemName: "repeat")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 18, height: 18)
-                            .padding(8)
-                    }
+//                    Button(action: {
+//                        onAction3?()
+//                    }) {
+//                        Image(systemName: "repeat")
+//                            .resizable()
+//                            .scaledToFit()
+//                            .frame(width: 18, height: 18)
+//                            .padding(8)
+//                    }
                 }
             }
             .frame(maxWidth: .infinity, alignment: isSystemmessage ? .leading : .trailing)
@@ -98,20 +103,55 @@ struct ChatMessageView<Content: View>: View {
             )
         }
     }
+    
+    private func button1Image(message: ChatMessage) -> String {
+        switch message.type {
+        case .systemTextLarge:
+            return "speaker.wave.2"
+        case .systemTextShort:
+            return "speaker.wave.2"
+        case .userAudio(_, let status, _):
+            switch status {
+            case .initial:
+                return "mic"
+            case .recording:
+                return "stop.circle"
+            case .recorded:
+                return "repeat.circle"
+            }
+        }
+    }
+    
+    private func button2Image(message: ChatMessage) -> String {
+        switch message.type {
+        case .systemTextLarge:
+            return ""
+        case .systemTextShort:
+            return ""
+        case .userAudio(_, let status, _):
+            switch status {
+            case .recorded:
+                return "play.circle"
+            default:
+                return ""
+            }
+        }
+    }
 }
 
 
 #Preview {
-    ChatMessageView(isSystemmessage: true) {
-        Text("Hi")
-        Image(systemName: "star.fill")
-            .foregroundStyle(.yellow)
-        Text("This bubble can take everything")
-    }
-    ChatMessageView(isSystemmessage: false) {
-        Text("Hallo")
-        Image(systemName: "star.fill")
-            .foregroundStyle(.yellow)
-        Text("Alles geht gut")
-    }
+//    ChatMessageView(isSystemmessage: true) {
+//        Text("Hi")
+//        Image(systemName: "star.fill")
+//            .foregroundStyle(.yellow)
+//        Text("This bubble can take everything")
+//    }
+//    ChatMessageView(isSystemmessage: false) {
+//        Text("Hallo")
+//        Image(systemName: "star.fill")
+//            .foregroundStyle(.yellow)
+//        Text("Alles geht gut")
+//    }
 }
+

@@ -34,7 +34,7 @@ struct ArticlesByWeekView: View {
                     .font(.subheadline)
                     .foregroundColor(.gray)
                 List(viewModel.articles, id: \.id) { article in
-                    NavigationLink(destination: createPracticeSheetView.create(article: article)) {
+                    NavigationLink(destination: createPracticeSheetView.create(article: article).toolbar(.hidden, for: .tabBar)) {
                         Text(article.title)
                     }
                 }

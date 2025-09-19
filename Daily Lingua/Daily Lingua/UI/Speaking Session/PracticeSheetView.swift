@@ -42,8 +42,9 @@ struct PracticeSheetView: View {
                             ForEach(viewModel.messages) { message in
                                 switch message.type {
                                 case .systemTextLarge(let text, let audioURL):
-                                    ChatMessageView(isSystemmessage: true,
-                                                    onAction2: { _ in
+                                    ChatMessageView(isSystemmessage: true, message: message,
+                                                    onAction1: {
+                                        print("Se ha pedido que se reproduzca el artículo, la url es: \(audioURL)")
                                         viewModel.playAudio(url: audioURL)
                                     }) {
                                         Text(text)
@@ -51,50 +52,47 @@ struct PracticeSheetView: View {
                                     }
                                     
                                 case .systemTextShort(let text, let audioURL):
-                                    ChatMessageView(isSystemmessage: true,
-                                                    onAction2: { _ in
+                                    ChatMessageView(isSystemmessage: true, message: message,
+                                                    onAction1: {
+                                        print("Se ha pedido que se reproduzca la pregunta, la url es: \(audioURL)")
                                         viewModel.playAudio(url: audioURL)
                                     }) {
                                         VStack(alignment: .leading, spacing: 4) {
                                             Text(text)
-                                            Text("(Touch the speaker to listen)")
-                                                .font(.caption)
-                                                .foregroundStyle(.secondary)
                                         }
                                     }
                                     
                                 case .userAudio(let audioUrl, let status, let qIndex):
-                                    ChatMessageView(isSystemmessage: false,
-                                                    onAction1: { _ in
-                                        Task {
-                                            await viewModel.startRecording(for: qIndex)
-                                        }
-                                    },
-                                                    onAction2: { _ in
-                                        if status == .recorded {
-                                            viewModel.playAudio(url: audioUrl)
+                                    ChatMessageView(isSystemmessage: false, message: message,
+                                                onAction1: {
+                                        if status == .recorded || status == .initial {
+                                            Task {
+                                                await viewModel.startRecording(for: qIndex)
+                                            }
                                         } else if status == .recording {
                                             Task {
                                                 await viewModel.stopRecording(for: qIndex)
                                             }
                                         }
-                                    },
-                                                    onAction3: { _ in
-                                        Task {
-                                            viewModel.playAudio(url: audioUrl)
+                                    }, onAction2: {
+                                        if status == .recorded {
+                                            Task {
+                                                viewModel.playAudio(url: audioUrl)
+                                            }
                                         }
-                                    }) {
+                                    })
+                                    {
                                         VStack(alignment: .trailing, spacing: 4) {
                                             switch status {
                                             case .initial:
-                                                Text("Sin respuesta aún")
+                                                Text("You can start recording your answer.")
                                                     .italic()
                                                     .foregroundStyle(.secondary)
                                             case .recording:
-                                                Text("Grabando...")
+                                                Text("Recording...")
                                                     .foregroundStyle(.red)
                                             case .recorded:
-                                                Text("Respuesta grabada")
+                                                Text("Recorded response. You can try again if you want.")
                                                     .bold()
                                             }
                                         }

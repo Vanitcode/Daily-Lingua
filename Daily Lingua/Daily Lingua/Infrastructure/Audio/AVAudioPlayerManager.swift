@@ -14,12 +14,18 @@ class AVAudioPlayerManager: AudioPlayerType {
     private var player: AVAudioPlayer?
     
     func play(from url: URL) -> Result<Void, AudioPlayerError> {
-        stop() 
+        stop()
         do {
+            try configureAudioSession()
             player = try AVAudioPlayer(contentsOf: url)
-            player?.play()
+            let started = player?.play() ?? false
+            if !started {
+                print("AVAudioPlayer failed to start playing.")
+                return .failure(.playError)
+            }
             return .success(())
         } catch {
+            print("Failed to configure audio session or player: \(error)")
             return .failure(.playError)
         }
     }
@@ -27,5 +33,11 @@ class AVAudioPlayerManager: AudioPlayerType {
     func stop() {
         player?.stop()
         player = nil
+    }
+    
+    func configureAudioSession() throws {
+        let session = AVAudioSession.sharedInstance()
+        try session.setCategory(.playAndRecord, options: [.defaultToSpeaker])
+        try session.setActive(true)
     }
 }
