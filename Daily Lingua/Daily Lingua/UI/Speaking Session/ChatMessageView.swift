@@ -13,7 +13,7 @@ struct ChatMessageView<Content: View>: View {
     var message: ChatMessage
     var onAction1: (() -> Void)? = nil // To listen
     var onAction2: (() -> Void)? = nil // For recording actions
-    var onAction3: (() -> Void)? = nil
+    //var onAction3: (() -> Void)? = nil
     
     @ViewBuilder var content: Content
 
