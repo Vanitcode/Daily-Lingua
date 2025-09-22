@@ -17,8 +17,10 @@ class ArticleData {
     var question2: String
     var question3: String
     var week: String
+    var iconName: String
+    var iconColor: String
     
-    init(id: String, title: String, text: String, question1: String, question2: String, question3: String, week: String) {
+    init(id: String, title: String, text: String, question1: String, question2: String, question3: String, week: String, iconName: String, iconColor: String) {
         self.id = id
         self.title = title
         self.text = text
@@ -26,5 +28,7 @@ class ArticleData {
         self.question2 = question2
         self.question3 = question3
         self.week = week
+        self.iconName = iconName
+        self.iconColor = iconColor
     }
 }

@@ -23,8 +23,10 @@ struct ArticleDTO: Codable {
     let title_audio_url: String
     let topics: String
     let weekId: String
+    let icon_name: String
+    let icon_color: String
     
     enum CodingKeys: String, CodingKey {
-        case id, article, article_audio_url, date, isFree, question1, question1_audio_url, question2, question2_audio_url, question3, question3_audio_url, title, title_audio_url, topics, weekId
+        case id, article, article_audio_url, date, isFree, question1, question1_audio_url, question2, question2_audio_url, question3, question3_audio_url, title, title_audio_url, topics, weekId, icon_name, icon_color
     }
 }

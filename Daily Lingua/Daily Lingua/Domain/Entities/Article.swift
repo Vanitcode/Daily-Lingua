@@ -14,4 +14,6 @@ struct Article {
     let question1: String
     let question2: String
     let question3: String
+    let iconName: String
+    let iconColor: String
 }

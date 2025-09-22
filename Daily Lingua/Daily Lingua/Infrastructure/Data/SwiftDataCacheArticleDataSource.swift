@@ -20,7 +20,7 @@ class SwiftDataCacheArticleDataSource: CacheDataSourceType {
         let articleList = await container.fetchArticles(week: week)
         let articles = articleList.map {
             Article(id: $0.id, title: $0.title, text: $0.text,
-                    question1: $0.question1, question2: $0.question2, question3: $0.question3)
+                    question1: $0.question1, question2: $0.question2, question3: $0.question3, iconName: $0.iconName, iconColor: $0.iconColor)
         }
         return articles
         
@@ -28,7 +28,7 @@ class SwiftDataCacheArticleDataSource: CacheDataSourceType {
     
     @MainActor
     func saveArticleList(_ articles: [Article], week: String) async {
-        let articlesData = articles.map { ArticleData(id: $0.id, title: $0.title, text: $0.text, question1: $0.question1, question2: $0.question2, question3: $0.question3, week: week)}
+        let articlesData = articles.map { ArticleData(id: $0.id, title: $0.title, text: $0.text, question1: $0.question1, question2: $0.question2, question3: $0.question3, week: week, iconName: $0.iconName, iconColor: $0.iconColor)}
         await container.deleteArticlesForWeek(for: week)
         await container.insert(articlesData, forWeek: week)
     }

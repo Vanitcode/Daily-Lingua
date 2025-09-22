@@ -74,12 +74,16 @@ class APIArticleDataSource: ApiDataSourceArticleType {
         switch result {
         case .success(let data):
             do {
+                print("Se obtuvo los artículos de la request. Se procede a decodificarles")
+                print("Esta es la data: \(data)")
                 let articles = try JSONDecoder().decode([ArticleDTO].self, from: data)
                 return .success(articles)
             } catch {
+                print("Se obtuvo artículos de la request pero no se pudo decodificar")
                 return .failure(.parsingError)
             }
         case .failure(let error):
+            print("No se pudo obtener los artículos de la request")
             return .failure(error)
         }
     }
